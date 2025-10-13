@@ -1142,7 +1142,7 @@ This is now async and shows progress during fetching."
                      (write-region (point-min) (point-max) org-file-path nil 'quiet))
 
                    ;; Open the org file
-                   (find-file org-file-path)
+                   ;; (find-file org-file-path)  ; Commented out to avoid buffer switching before org-todo-list
                    (message "Updated Linear issues in %s with %d active issues"
                             org-file-path (length issues)))
 
