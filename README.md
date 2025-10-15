@@ -303,7 +303,7 @@ The org file will have the following structure:
 When you change the TODO state of an issue in the org file, it will automatically synchronize with Linear.
 
 ### Status Mapping
-
+Special thank you note to @loispostula for suggesting this change :)
 The `linear-emacs-issues-state-mapping` variable provides a unified configuration for mapping between Linear issue states and Org-mode TODO states. This single configuration controls:
 
 - Which Linear issues are synced to your Org file (only issues with mapped states are included)
