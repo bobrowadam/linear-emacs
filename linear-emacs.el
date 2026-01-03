@@ -346,6 +346,10 @@ PROJECT-ID optionally filters by project."
   title
   description
   priority
+  dueDate
+  startedAt
+  createdAt
+  cycle { id name number startsAt endsAt }
   state { name color }
   team { id name }
   labels {
@@ -374,6 +378,10 @@ PROJECT-ID optionally filters by project."
   title
   description
   priority
+  dueDate
+  startedAt
+  createdAt
+  cycle { id name number startsAt endsAt }
   state { name color }
   team { id name }
   labels {
@@ -1014,6 +1022,13 @@ CALLBACK is called with the list of states."
    ((eq priority-num 4) "Low")
    (t "Medium")))
 
+(defun linear-emacs--format-date-as-org (date-string)
+  "Convert Linear DATE-STRING (YYYY-MM-DD) to org date format.
+Returns nil if DATE-STRING is nil or invalid."
+  (when (and date-string (not (eq date-string 'null)) (stringp date-string))
+    (ignore-errors
+      (format-time-string "<%Y-%m-%d %a>" (date-to-time date-string)))))
+
 (defun linear-emacs--format-issue-as-org-entry (issue)
   "Format a Linear ISSUE as an \='org-mode\=' entry."
   (let* ((id (cdr (assoc 'id issue)))
@@ -1041,12 +1056,27 @@ CALLBACK is called with the list of states."
                                   labels-nodes ", "))
                    ""))
          (link (format "https://linear.app/issue/%s" identifier))
+         (cycle-data (cdr (assoc 'cycle issue)))
+         (cycle-end (and cycle-data
+                         (not (eq cycle-data 'null))
+                         (cdr (assoc 'endsAt cycle-data))))
+         (deadline (linear-emacs--format-date-as-org cycle-end))
+         (scheduled (or (linear-emacs--format-date-as-org (cdr (assoc 'startedAt issue)))
+                        (format-time-string "<%Y-%m-%d %a>")))
          (result ""))
 
     ;; Build the org entry as a string
     ;; Sanitize title to ensure org compatibility
     (let ((sanitized-title (replace-regexp-in-string "\\[\\|\\]" "" title)))
       (setq result (concat result (format "*** %s %s %s\n" todo-state priority sanitized-title))))
+
+    ;; Add planning line (SCHEDULED and/or DEADLINE)
+    (when (or scheduled deadline)
+      (setq result (concat result
+                           (when scheduled (format "SCHEDULED: %s" scheduled))
+                           (when (and scheduled deadline) " ")
+                           (when deadline (format "DEADLINE: %s" deadline))
+                           "\n")))
 
     (setq result (concat result ":PROPERTIES:\n"))
     (setq result (concat result (format ":ID:       %s\n" id)))
