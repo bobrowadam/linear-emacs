@@ -1141,7 +1141,7 @@ This is now async and shows progress during fetching."
                      ;; Insert header - keywords must be OUTSIDE the PROPERTIES drawer
                      (insert "#+title: Linear issues assigned to me\n")
                      (insert "#+STARTUP: overview\n")
-                     (insert "#+TODO: TODO NEXT WAITING | DONE\n")
+                     (insert "#+TODO: TODO(t) NEXT(n) WAITING(w) | DONE(d)\n")
                      (insert "#+filetags: :twai:b:\n\n")
 
                      ;; Insert issues
