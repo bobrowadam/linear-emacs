@@ -940,10 +940,12 @@ CALLBACK is called with the list of states."
   (if (memq this-command '(org-todo org-agenda-todo))
       (progn
         (linear-emacs-sync-current-heading-to-linear)
-        ;; Optimistic update: refresh agenda if visible
-        (when-let ((agenda-window (get-buffer-window "*Org Agenda*" t)))
-          (with-selected-window agenda-window
-            (org-agenda-redo-all))))
+        ;; Optimistic update: defer refresh to avoid conflicts with current command
+        (run-at-time 0.1 nil
+                     (lambda ()
+                       (when-let ((agenda-window (get-buffer-window "*Org Agenda*" t)))
+                         (with-selected-window agenda-window
+                           (org-agenda-redo-all))))))
     ;; Otherwise, scan the entire file
     (save-excursion
       (goto-char (point-min))
