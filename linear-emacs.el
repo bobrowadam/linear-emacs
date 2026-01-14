@@ -1379,5 +1379,15 @@ Uses async API for better performance."
   (remove-hook 'org-after-todo-state-change-hook #'linear-emacs-sync-org-to-linear t)
   (message "Linear-org synchronization disabled"))
 
+(defun linear-emacs--maybe-enable-sync ()
+  "Enable sync if current buffer is the linear-emacs org file."
+  (when (and buffer-file-name
+             linear-emacs-org-file-path
+             (string= (expand-file-name buffer-file-name)
+                      (expand-file-name linear-emacs-org-file-path)))
+    (linear-emacs-enable-org-sync)))
+
+(add-hook 'org-mode-hook #'linear-emacs--maybe-enable-sync)
+
 (provide 'linear-emacs)
 ;;; linear-emacs.el ends here
