@@ -937,7 +937,7 @@ CALLBACK is called with the list of states."
   "Syncs change from linear.org to Linear API."
   (interactive)
   ;; If called from org-after-todo-state-change-hook, just process the current heading
-  (if (eq this-command 'org-todo)
+  (if (memq this-command '(org-todo org-agenda-todo))
       (progn
         (linear-emacs-sync-current-heading-to-linear)
         ;; Optimistic update: refresh agenda if visible
