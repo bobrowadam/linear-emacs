@@ -938,7 +938,12 @@ CALLBACK is called with the list of states."
   (interactive)
   ;; If called from org-after-todo-state-change-hook, just process the current heading
   (if (eq this-command 'org-todo)
-      (linear-emacs-sync-current-heading-to-linear)
+      (progn
+        (linear-emacs-sync-current-heading-to-linear)
+        ;; Optimistic update: refresh agenda if visible
+        (when-let ((agenda-window (get-buffer-window "*Org Agenda*" t)))
+          (with-selected-window agenda-window
+            (org-agenda-redo-all))))
     ;; Otherwise, scan the entire file
     (save-excursion
       (goto-char (point-min))
