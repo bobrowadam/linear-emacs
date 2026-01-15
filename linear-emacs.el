@@ -122,6 +122,13 @@ When enabled, displays messages about ongoing API operations."
   :type 'boolean
   :group 'linear-emacs)
 
+(defcustom linear-emacs-filetags nil
+  "List of filetags to add to the generated org file.
+When nil, no filetags header is inserted.
+Example: (\"work\" \"linear\") produces #+filetags: :work:linear:"
+  :type '(repeat string)
+  :group 'linear-emacs)
+
 (defvar linear-emacs-todo-states-pattern nil
   "Cached regex pattern for matching org-mode TODO states.
 This pattern is generated from `linear-emacs-issues-state-mapping'.
@@ -1149,7 +1156,10 @@ This is now async and shows progress during fetching."
                      (insert "#+title: Linear issues assigned to me\n")
                      (insert "#+STARTUP: overview\n")
                      (insert "#+TODO: TODO(t) NEXT(n) WAITING(w) BACKLOG(b) | DONE(d)\n")
-                     (insert "#+filetags: :twai:b:\n\n")
+                     (when linear-emacs-filetags
+                       (insert (format "#+filetags: :%s:\n"
+                                       (string-join linear-emacs-filetags ":"))))
+                     (insert "\n")
 
                      ;; Insert issues
                      (dolist (issue issues)
